@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package features.message.view;
+package features.transaction.view;
 
 import core.BaseApp;
 import core.Session;
@@ -27,12 +27,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-public class AccountTransferPopup {
+public class TransferBetweenAccount {
     private List<Account> accountList = new ArrayList<>();
     private List<String> allAccountList=new ArrayList<>();
 
     public void openPopup(JFrame frame) {
-        fetchedALlUserActiveAccount();
+        fetchALlUserActiveAccount();
         showTransferPopup(frame);
     }
 
@@ -46,8 +46,6 @@ public class AccountTransferPopup {
         accountListCB = new String[] {allAccountList.get(0),allAccountList.get(1)};
         }
         
-        System.out.println(accountListCB);
-//        String[] accountListCB = new String[] {allAccountList.get(0),allAccountList.get(1),allAccountList.get(2)};
         JDialog popup = new JDialog(parent, "Transfer Between Accounts", true);
         popup.setSize(400, 400);
         popup.setLayout(new GridBagLayout());
@@ -142,7 +140,8 @@ public class AccountTransferPopup {
             try {
                 double amount = Double.parseDouble(balance);
                 if (amount <= 0) {
-                    throw new NumberFormatException();
+                    JOptionPane.showMessageDialog(popup, "Transfer amount Cannot be 0.","Error",JOptionPane.INFORMATION_MESSAGE);
+                    return;
                 }
                 String fromAccountNumber = fromAccount.split("/")[1];
                 String toAccountNumber = toAccount.split("/")[1];
@@ -151,24 +150,20 @@ public class AccountTransferPopup {
                         "Transfer confirmed:\n" +
                                 "From: " + fromAccountNumber + "\n" +
                                 "To: " + toAccountNumber + "\n" +
-                                "Amount: $" + amount + "\n" +
+                                "Amount: Rs." + amount + "\n" +
                                 "Description: " + description + "\n" +
                                 (reference.isEmpty() ? "" : "Reference: " + reference),
                         "Success", JOptionPane.OK_CANCEL_OPTION);
                 if(confirmationResponse == JOptionPane.OK_OPTION) {
-                    int userId = Session.getSession().getLoggedInUser().getUserId();
                     TransactionController transactionController = BaseApp.getTransactionController();
-                    boolean result = transactionController.transfer(fromAccountNumber, toAccountNumber, amount, userId, description, reference.isEmpty() ? "" : reference);
+                    boolean result = transactionController.transferBetweenAccount(fromAccountNumber, toAccountNumber, amount, description, reference.isEmpty() ? "" : reference);
                     if(result){
                         JOptionPane.showMessageDialog(popup, "You payment is successful.","Payment Success",JOptionPane.INFORMATION_MESSAGE);
                         popup.dispose();
                     } else {
                         JOptionPane.showMessageDialog(popup, "You payment was failed.","Payment Failed",JOptionPane.ERROR);
-
                     }
                 }
-                // popup.dispose(); // Close the popup
-
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(popup, "Please enter a valid balance.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -177,7 +172,7 @@ public class AccountTransferPopup {
         popup.setVisible(true);
     }
 
-    void fetchedALlUserActiveAccount(){
+    void fetchALlUserActiveAccount(){
         User user = Session.getSession().getLoggedInUser();
         AccountController accountController = BaseApp.getAccountController();
         accountList = accountController.getAllActiveUserAccount(user.getUserId())
@@ -209,9 +204,5 @@ public class AccountTransferPopup {
             allAccountList.add(String.format("%s/%s", normalAccount.getAccountType(),normalAccount.getAccountNumber()));
             allAccountList.add(String.format("%s/%s", saverAccount.getAccountType(),saverAccount.getAccountNumber()));
         }
-        System.out.println(allAccountList+"<---");
     }
-
-
-
 }

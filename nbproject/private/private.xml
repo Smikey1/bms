@@ -2,6 +2,27 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/E:/Pratiksha/bms_final/src/features/transaction/view/ATMWithdraw.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/repository/UserRepositoryImpl.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/transaction/model/Transaction.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/view/AdminDashboard.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/view/UserDashboard.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/transaction/utils/TransactionQueryManager.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/MainView.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/repository/UserRepository.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/utils/UserQueryManager.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/kyc/view/KYCScreen.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/account/repository/AccountRepositoryImpl.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/transaction/repository/TransactionRepositoryImpl.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/view/GetAllUser.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/notification/view/NotificationPopup.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/core/CustomDateFormatter.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/view/LoginScreen.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/account/view/screens/AccountListScreen.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/controller/UserController.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/account/view/screens/AccountDetailScreen.java</file>
+            <file>file:/E:/Pratiksha/bms_final/src/features/auth/view/RegisterScreen.java</file>
+        </group>
     </open-files>
 </project-private>

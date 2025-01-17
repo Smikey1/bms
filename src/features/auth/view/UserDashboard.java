@@ -16,12 +16,12 @@ import javax.swing.JOptionPane;
  *
  * @author Pratiksha
  */
-public class Dashboard extends javax.swing.JFrame {
+public class UserDashboard extends javax.swing.JFrame {
 
     /**
      * Creates new form Dashboard
      */
-    public Dashboard() {
+    public UserDashboard() {
         initComponents();
     }
 
@@ -56,7 +56,7 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lblFullName = new javax.swing.JLabel();
 
         jLabel11.setText("Reuqest to open a bank account?");
 
@@ -275,7 +275,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jLabel2.setText("Pratiksha");
+        lblFullName.setText("Pratiksha");
 
         javax.swing.GroupLayout MainAccountPanelLayout = new javax.swing.GroupLayout(MainAccountPanel);
         MainAccountPanel.setLayout(MainAccountPanelLayout);
@@ -289,7 +289,7 @@ public class Dashboard extends javax.swing.JFrame {
                     .addGroup(MainAccountPanelLayout.createSequentialGroup()
                         .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(51, 51, 51)
-                        .addComponent(jLabel2)
+                        .addComponent(lblFullName)
                         .addGap(9, 9, 9))
                     .addGroup(MainAccountPanelLayout.createSequentialGroup()
                         .addComponent(requestBankAccountPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -303,7 +303,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(MainAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(lblFullName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(requestBankAccountPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -334,18 +334,27 @@ public class Dashboard extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
         User loggedInUser = Session.getSession().getLoggedInUser();
+        lblFullName.setText(loggedInUser.getName());
         MessageInfo message = new MessageController().getUserLastMessage();
         requestBankAccountPanel.setVisible(false);
         requestLoanAccountPanel.setVisible(false);
+        
+        
+            
         if(message != null){
             pInfotitle.setText(message.getTitle());
             pInfoLabel.setText(message.getMessage());
             infoPanel.setVisible(true);
-            System.out.println(message.getMessageType().toUpperCase());
+        }
+        if(message != null){
             switch (message.getMessageType().toUpperCase()) {
                 case "KYC" -> {
-                    requestBankAccountPanel.setVisible(false);
-                    requestLoanAccountPanel.setVisible(false);
+                    KYCController kYCController = BaseApp.getKycController();
+                    KYCDetails kycDetails = kYCController.getKYCDetailsFromUserId(String.valueOf(loggedInUser.getUserId()));
+                    if(kycDetails.isVerified()){
+                            requestBankAccountPanel.setVisible(true);
+                            requestLoanAccountPanel.setVisible(true);
+                    }
                 }
                 case "ACCOUNT" -> {
                     requestBankAccountPanel.setVisible(false);
@@ -366,13 +375,12 @@ public class Dashboard extends javax.swing.JFrame {
             }  
         } else {
             infoPanel.setVisible(false);
-
-            KYCController kYCController = BaseApp.getKycController();
-            KYCDetails kycDetails = kYCController.getKYCDetailsFromUserId(String.valueOf(loggedInUser.getUserId()));
-            if(kycDetails.isVerified()){
-            requestBankAccountPanel.setVisible(true);
-            requestLoanAccountPanel.setVisible(true);
-            }
+//            KYCController kYCController = BaseApp.getKycController();
+//            KYCDetails kycDetails = kYCController.getKYCDetailsFromUserId(String.valueOf(loggedInUser.getUserId()));
+//            if(kycDetails.isVerified()){
+//                requestBankAccountPanel.setVisible(true);
+//                requestLoanAccountPanel.setVisible(true);
+//            }
         }
     }//GEN-LAST:event_formWindowOpened
 
@@ -439,20 +447,21 @@ public class Dashboard extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Dashboard().setVisible(true);
+                new UserDashboard().setVisible(true);
             }
         });
     }
@@ -467,7 +476,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -477,6 +485,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblFullName;
     private javax.swing.JLabel pInfoLabel;
     private javax.swing.JLabel pInfotitle;
     private javax.swing.JPanel requestBankAccountPanel;

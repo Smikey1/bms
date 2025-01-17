@@ -1,34 +1,27 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package features.message.view;
+package features.notification.view;
 
+import core.BaseApp;
+import core.Session;
+import features.auth.model.User;
+import features.notification.controller.NotificationController;
+import features.notification.model.Notification;
 import java.awt.*;
 import javax.swing.*;
+import java.util.List;
 
-public class CustomNotificationPopup {
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Notification Popup Example");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 300);
-            
-            // Set the background color of the frame to white
-            frame.getContentPane().setBackground(Color.WHITE);
-
-            // Create a button to trigger the notification popup
-            JButton notificationButton = new JButton("Show Notifications");
-            notificationButton.addActionListener(e -> showNotificationPopup(frame));
-
-            frame.setLayout(new FlowLayout());
-            frame.add(notificationButton);
-            frame.setVisible(true);
-        });
+public class NotificationPopup {
+    
+    public void openPopup(JFrame frame) {
+        List<Notification> notificationList = fetchAllUserNotification();
+        showNotificationPopup(frame,notificationList);
     }
-
-    private static void showNotificationPopup(JFrame parent) {
+    
+    private List<Notification> fetchAllUserNotification(){
+        NotificationController nc = BaseApp.getNotificationController();
+        return nc.getAllUserNotification(Session.getSession().getLoggedInUser().getUserId());
+    }
+    
+    private void showNotificationPopup(JFrame parent,List<Notification> notificationList) {
         // Create a JDialog for the popup with a wider size
         JDialog popup = new JDialog(parent, "Notifications", false);
         popup.setUndecorated(true); // Remove title bar
@@ -37,7 +30,7 @@ public class CustomNotificationPopup {
 
         // Close button
         JButton closeButton = new JButton("X");
-        closeButton.setPreferredSize(new Dimension(60, 30));
+        closeButton.setPreferredSize(new Dimension(65, 30));
         closeButton.setFocusable(false);
         closeButton.addActionListener(e -> popup.dispose());
 
@@ -49,11 +42,9 @@ public class CustomNotificationPopup {
         JPanel notificationPanel = new JPanel();
         notificationPanel.setLayout(new BoxLayout(notificationPanel, BoxLayout.Y_AXIS));
 
-        // Add sample notifications
-        for (int i = 0; i < 5; i++) {
-            notificationPanel.add(createNotificationCard("User " + (i + 1),
-                    "answered to your comment answered to your comment", i + " days ago", popup));
-        }
+        notificationList.forEach(notification ->{
+            notificationPanel.add(createNotificationCard(notification,popup));
+        });
 
         // Wrap notifications in a JScrollPane
         JScrollPane scrollPane = new JScrollPane(notificationPanel);
@@ -69,7 +60,8 @@ public class CustomNotificationPopup {
         popup.setVisible(true);
     }
 
-    private static JPanel createNotificationCard(String userName, String action, String time, JDialog popup) {
+    private static JPanel createNotificationCard(Notification notification, JDialog popup) {
+        User loggedInUser = Session.getSession().getLoggedInUser();
         JPanel notificationCard = new JPanel(new BorderLayout());
         notificationCard.setBorder(BorderFactory.createEmptyBorder(3, 3,3, 1));
         notificationCard.setBackground(Color.LIGHT_GRAY);
@@ -77,20 +69,20 @@ public class CustomNotificationPopup {
         // Profile picture
         JLabel profilePic = new JLabel();
         profilePic.setIcon(new ImageIcon(new ImageIcon(
-        CustomNotificationPopup.class.getResource("/Images/notificationicon.png"))
-        .getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
-        profilePic.setBorder(BorderFactory.createEmptyBorder(1, 1,1, 3));
+        NotificationPopup.class.getResource("/Images/icons8-notification-21.png"))
+        .getImage().getScaledInstance(21, 21, Image.SCALE_SMOOTH)));
+        profilePic.setBorder(BorderFactory.createEmptyBorder(1, 1,1, 1));
         profilePic.setBackground(Color.LIGHT_GRAY);
 
 
         // Text content
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-        JLabel userLabel = new JLabel(userName);
+        JLabel userLabel = new JLabel(notification.getTitle());
         userLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        JLabel actionLabel = new JLabel(action);
+        JLabel actionLabel = new JLabel(notification.getMessage());
         actionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        JLabel timeLabel = new JLabel(time);
+        JLabel timeLabel = new JLabel(notification.getCreatedAt().toString());
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
         textPanel.add(userLabel);
         textPanel.add(actionLabel);
@@ -99,11 +91,13 @@ public class CustomNotificationPopup {
         // Buttons for Mark as Seen and Delete (small size, horizontal placement)
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        JButton markAsSeenButton = new JButton("Read");
+        boolean notificationStatus = notification.isSeen() == true;
+        NotificationStatus buttonText = notificationStatus?NotificationStatus.UNREAD:NotificationStatus.READ;
+        JButton markAsSeenButton = new JButton(buttonText.name());
         JButton deleteButton = new JButton("Delete");
 
         // Making buttons smaller
-        markAsSeenButton.setPreferredSize(new Dimension(80, 25));
+        markAsSeenButton.setPreferredSize(new Dimension(85, 25));
         deleteButton.setPreferredSize(new Dimension(80, 25));
 
         markAsSeenButton.setFocusable(false);
@@ -111,14 +105,22 @@ public class CustomNotificationPopup {
 
         // Add ActionListener for Mark as Seen
         markAsSeenButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(popup, userName + "'s notification marked as seen.");
+            NotificationController nc = BaseApp.getNotificationController();
+            NotificationStatus newButtonText = buttonText == NotificationStatus.READ ? NotificationStatus.UNREAD : NotificationStatus.READ;
+            markAsSeenButton.setText(newButtonText.name());
+            nc.markNotificationAsSeen(notification.getId());
+            notificationCard.getParent().revalidate();
+            notificationCard.getParent().repaint();
         });
+        
 
         // Add ActionListener for Delete
         deleteButton.addActionListener(e -> {
+            NotificationController nc = BaseApp.getNotificationController();
+            nc.deleteNotification(notification.getId());
             notificationCard.getParent().remove(notificationCard); // Remove the notification
-            notificationCard.getParent().revalidate();            // Refresh the panel
-            notificationCard.getParent().repaint();
+            notificationCard.revalidate();            // Refresh the panel
+            notificationCard.repaint();
         });
 
         buttonPanel.add(markAsSeenButton);
